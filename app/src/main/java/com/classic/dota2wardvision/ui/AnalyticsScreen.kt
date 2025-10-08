@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -87,14 +88,14 @@ fun AnalyticsScreen(
 //        }
 //    }
 
-    BoxWithConstraints(
+    Box(
         modifier = Modifier.wrapContentSize()
     ) {
         val mapPainter = painterResource(id = R.drawable.gamemap_7_39_minimap_dota2_gameasset)
 
-        val mapWidth = constraints.maxWidth
-        val mapHeight = constraints.maxHeight
-        Log.d("AnalyticsScreenWidthHeight",mapWidth.toString() + "," + mapHeight.toString())
+        //val mapWidth = constraints.maxWidth
+        //val mapHeight = constraints.maxHeight
+        //Log.d("AnalyticsScreenWidthHeight",maxWidth.toString() + "," + maxHeight.toString())
 
         var imageSize by remember { mutableStateOf(IntSize.Zero) }
         Log.d("AnalyticsScreenImageSize",imageSize.toString())
@@ -108,8 +109,10 @@ fun AnalyticsScreen(
             painter = mapPainter,
             contentDescription = "Ward Map",
             //modifier = Modifier.wrapContentSize(),
-            contentScale = ContentScale.Fit,
-            modifier = Modifier.onGloballyPositioned { layoutCoordinates ->
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxWidth()
+                .onGloballyPositioned { layoutCoordinates ->
                 imageSize = layoutCoordinates.size
             }
         )

@@ -15,7 +15,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -41,7 +43,13 @@ fun VersionHistoryScreen(
                 .padding(paddingValues)
                 .padding(16.dp)
         ) {
-            Text("v1.1 - Initial release")
+            Text("v1.2 - Bug Fix and New Feature",fontWeight = FontWeight.Bold, fontSize = 18.sp)
+            Text("- Fix map in Analytics and History size issue")
+            Text("- Fix alarm stops after switching pages")
+            Text("- Add alarm for Roshan")
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text("v1.1 - Initial Release",fontWeight = FontWeight.Bold, fontSize = 18.sp)
             Spacer(modifier = Modifier.height(8.dp))
         }
     }

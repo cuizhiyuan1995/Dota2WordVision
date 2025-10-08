@@ -15,16 +15,19 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -38,10 +41,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.classic.dota2wardvision.R
 import com.classic.dota2wardvision.alarm.AlarmEntity
 import com.classic.dota2wardvision.alarm.AlarmTTS
 import com.classic.dota2wardvision.viewModel.AlarmViewModel
@@ -52,53 +57,54 @@ fun AlarmScreen(
     navController: NavHostController,
     viewModel: AlarmViewModel = hiltViewModel()
 ) {
-    var timeInSeconds by remember { mutableStateOf(0) }
+//    var timeInSeconds by remember { mutableStateOf(0) }
+    val timeInSeconds by viewModel.timeInSeconds.collectAsState()
     var isRunning by remember { mutableStateOf(false) }
     val alarms by viewModel.alarms.collectAsState()
     val scrollState = rememberScrollState()
     val context = LocalContext.current
     val alarmTTS = remember { AlarmTTS(context) }
 
-    LaunchedEffect(Unit) {
-        alarmTTS.setupTTS(context)
-    }
+//    LaunchedEffect(Unit) {
+//        alarmTTS.setupTTS(context)
+//    }
 
-    // Coroutine to update timer every second when running
-    LaunchedEffect(isRunning) {
-        if (isRunning) {
-            while (true) {
-                delay(1000L)
-                timeInSeconds++
+//    // Coroutine to update timer every second when running
+//    LaunchedEffect(isRunning) {
+//        if (isRunning) {
+//            while (true) {
+//                delay(1000L)
+//                timeInSeconds++
+//
+//
+//                // Check alarms
+//                alarms.forEach { alarm ->
+//                    val repeatTime = alarm.repeatMinute * 60 + alarm.repeatSecond
+//                    val startTime = alarm.startMinute * 60 + alarm.startSecond
+//                    if (repeatTime > 0) {
+//                        if ((timeInSeconds - startTime) >= 0 &&
+//                            (timeInSeconds - startTime) % repeatTime == 0
+//                        ) {
+//                            alarmTTS.speak(alarm.alarmText)
+//                            Log.d("⏰ Alarm Triggered", alarm.alarmText)
+//                        }
+//                    } else {
+//                        if (timeInSeconds == startTime) {
+//                            alarmTTS.speak(alarm.alarmText)
+//                            Log.d("⏰ Alarm Triggered Once", alarm.alarmText)
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
 
-
-                // Check alarms
-                alarms.forEach { alarm ->
-                    val repeatTime = alarm.repeatMinute * 60 + alarm.repeatSecond
-                    val startTime = alarm.startMinute * 60 + alarm.startSecond
-                    if (repeatTime > 0) {
-                        if ((timeInSeconds - startTime) >= 0 &&
-                            (timeInSeconds - startTime) % repeatTime == 0
-                        ) {
-                            alarmTTS.speak(alarm.alarmText)
-                            Log.d("⏰ Alarm Triggered", alarm.alarmText)
-                        }
-                    } else {
-                        if (timeInSeconds == startTime) {
-                            alarmTTS.speak(alarm.alarmText)
-                            Log.d("⏰ Alarm Triggered Once", alarm.alarmText)
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    // Clean up when Composable leaves composition
-    DisposableEffect(Unit) {
-        onDispose {
-            alarmTTS.shutdown()
-        }
-    }
+//    // Clean up when Composable leaves composition
+//    DisposableEffect(Unit) {
+//        onDispose {
+//            alarmTTS.shutdown()
+//        }
+//    }
 
     // Format as MM:SS (minutes can exceed 60)
     val formattedTime = String.format(
@@ -107,55 +113,88 @@ fun AlarmScreen(
         timeInSeconds % 60
     )
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-            .verticalScroll(scrollState),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        // Timer text
-        Text(
-            text = formattedTime,
-            style = MaterialTheme.typography.headlineLarge
-        )
 
-        Spacer(modifier = Modifier.height(32.dp))
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    val currentTime = timeInSeconds
+                    val currentMinute = currentTime / 60
+                    val currentSecond = currentTime % 60
 
-        // Buttons row
-        Row(
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            // Pause button
-            Button(onClick = { isRunning = false }) {
-                Text("Pause")
-            }
-
-            // Start button
-            Button(onClick = { isRunning = true }) {
-                Text("Start")
-            }
-
-            // Reset button
-            Button(onClick = {
-                isRunning = false
-                timeInSeconds = 0
-            }) {
-                Text("Reset")
+                    viewModel.addAlarm(
+                        repeatMinute = 0,          // 8 minutes repeat
+                        startMinute = currentMinute + 8,
+                        repeatSecond = 0,
+                        startSecond = currentSecond,
+                        text = "Roshan"
+                    )
+                }
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.roshan_mapicon_dota2_gameasset),
+                    contentDescription = "Add Roshan Alarm"
+                )
             }
         }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // Row 2: Adjustment buttons
-        Row(
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
+    ) { padding ->
+        // your screen content here
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+                .verticalScroll(scrollState),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
+            // Timer text
+            Text(
+                text = formattedTime,
+                style = MaterialTheme.typography.headlineLarge
+            )
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            // Buttons row
+            Row(
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                // Pause button
+                Button(onClick = {
+                    //isRunning = false
+                    viewModel.pauseAlarm()
+                }) {
+                    Text("Pause")
+                }
+
+                // Start button
+                Button(onClick = {
+                    //isRunning = true
+                    viewModel.startAlarm()
+                }) {
+                    Text("Start")
+                }
+
+                // Reset button
+                Button(onClick = {
+                    //isRunning = false
+                    viewModel.stopAlarm()
+                    //timeInSeconds = 0
+                }) {
+                    Text("Reset")
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Row 2: Adjustment buttons
+            Row(
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
 //            Button(onClick = {
 //                timeInSeconds = (timeInSeconds - 120).coerceAtLeast(0)
 //            }) {
@@ -185,90 +224,111 @@ fun AlarmScreen(
 //            Button(onClick = { timeInSeconds += 120 }) {
 //                Text("+2m")
 //            }
-            listOf(
-                "-2m" to { timeInSeconds = (timeInSeconds - 120).coerceAtLeast(0) },
-                "-15s" to { timeInSeconds = (timeInSeconds - 15).coerceAtLeast(0) },
-                "-1s" to { timeInSeconds = (timeInSeconds - 1).coerceAtLeast(0) },
-            ).forEach { (label, action) ->
-                Button(
-                    onClick = action,
-                    modifier = Modifier.weight(1f) // share width equally
-                ) {
-                    Text(
-                        text = label,
-                        //fontSize = 2.sp, // smaller font
-                        maxLines = 1
-                    )
-                }
-            }
-        }
-
-        //continue adjustment buttons
-        // Row 2: Adjustment buttons
-        Row(
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            listOf(
-                "+1s" to { timeInSeconds += 1 },
-                "+15s" to { timeInSeconds += 15 },
-                "+2m" to { timeInSeconds += 120 }
-            ).forEach { (label, action) ->
-                Button(
-                    onClick = action,
-                    modifier = Modifier.weight(1f) // share width equally
-                ) {
-                    Text(
-                        text = label,
-                        //fontSize = 2.sp, // smaller font
-                        maxLines = 1
-                    )
-                }
-            }
-        }
-        Spacer(modifier = Modifier.height(24.dp))
-
-        //edit
-        // Alarm rows
-        Text("Alarms:", style = MaterialTheme.typography.titleMedium)
-        alarms.forEachIndexed { index, alarm ->
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .border(
-                        width = 1.dp,
-                        color = Color.Gray,
-                        shape = RoundedCornerShape(8.dp)
-                    )
-                    .padding(8.dp) // padding inside the border
-            ){
-                AlarmRow(
-                    alarm = alarm,
-                    onUpdate = { updated ->
-                        viewModel.addAlarmEntity(updated)
+                listOf(
+                    "-2m" to {
+                        //timeInSeconds = (timeInSeconds - 120).coerceAtLeast(0)
+                        viewModel.adjustAlarm(-120)
                     },
-                    onDelete = {
-                        viewModel.deleteAlarm(alarm)
+                    "-15s" to {
+                        //timeInSeconds = (timeInSeconds - 15).coerceAtLeast(0)
+                        viewModel.adjustAlarm(-15)
+                    },
+                    "-1s" to {
+                        //timeInSeconds = (timeInSeconds - 1).coerceAtLeast(0)
+                        viewModel.adjustAlarm(-1)
+                    },
+                ).forEach { (label, action) ->
+                    Button(
+                        onClick = action,
+                        modifier = Modifier.weight(1f) // share width equally
+                    ) {
+                        Text(
+                            text = label,
+                            //fontSize = 2.sp, // smaller font
+                            maxLines = 1
+                        )
                     }
-                )
+                }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
-        }
+            //continue adjustment buttons
+            // Row 2: Adjustment buttons
+            Row(
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                listOf(
+                    "+1s" to {
+                        //timeInSeconds += 1
+                        viewModel.adjustAlarm(1)
+                    },
+                    "+15s" to {
+                        //timeInSeconds += 15
+                        viewModel.adjustAlarm(15)
+                    },
+                    "+2m" to {
+                        //timeInSeconds += 120
+                        viewModel.adjustAlarm(120)
+                    }
+                ).forEach { (label, action) ->
+                    Button(
+                        onClick = action,
+                        modifier = Modifier.weight(1f) // share width equally
+                    ) {
+                        Text(
+                            text = label,
+                            //fontSize = 2.sp, // smaller font
+                            maxLines = 1
+                        )
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(24.dp))
 
-        // Add alarm button
-        Button(onClick = {
-            viewModel.addAlarm(
-                0,
-                0,
-                0,
-                0,
-                "")
-        }) {
-            Text("➕ Add Alarm")
+            //edit
+            // Alarm rows
+            Text("Alarms:", style = MaterialTheme.typography.titleMedium)
+            alarms.forEachIndexed { index, alarm ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(
+                            width = 1.dp,
+                            color = Color.Gray,
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                        .padding(8.dp) // padding inside the border
+                ){
+                    AlarmRow(
+                        alarm = alarm,
+                        onUpdate = { updated ->
+                            viewModel.addAlarmEntity(updated)
+                        },
+                        onDelete = {
+                            viewModel.deleteAlarm(alarm)
+                        }
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+
+            // Add alarm button
+            Button(onClick = {
+                viewModel.addAlarm(
+                    0,
+                    0,
+                    0,
+                    0,
+                    "")
+            }) {
+                Text("➕ Add Alarm")
+            }
         }
     }
+
+
 }
 
 @Composable

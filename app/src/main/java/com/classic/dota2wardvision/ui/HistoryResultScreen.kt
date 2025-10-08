@@ -2,8 +2,10 @@ package com.classic.dota2wardvision.ui
 
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
@@ -56,16 +58,16 @@ fun HistoryResultScreen(
         bottomBar = {} // leave empty to hide
     ) { innerPadding ->
         selectedReport?.let { report ->
-            BoxWithConstraints(
+            Box(
                 modifier = Modifier
                     .wrapContentSize()
                     .padding(innerPadding)
             ) {
                 val mapPainter = painterResource(id = R.drawable.gamemap_7_39_minimap_dota2_gameasset)
 
-                val mapWidth = constraints.maxWidth
-                val mapHeight = constraints.maxHeight
-                Log.d("HistoryResultScreenWidthHeight",mapWidth.toString() + "," + mapHeight.toString())
+//                val mapWidth = constraints.maxWidth
+//                val mapHeight = constraints.maxHeight
+//                Log.d("HistoryResultScreenWidthHeight",mapWidth.toString() + "," + mapHeight.toString())
 
                 var imageSize by remember { mutableStateOf(IntSize.Zero) }
                 Log.d("HistoryResultScreenImageSize",imageSize.toString())
@@ -79,8 +81,10 @@ fun HistoryResultScreen(
                     painter = mapPainter,
                     contentDescription = "Ward Map",
                     //modifier = Modifier.wrapContentSize(),
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier.onGloballyPositioned { layoutCoordinates ->
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .onGloballyPositioned { layoutCoordinates ->
                         imageSize = layoutCoordinates.size
                     }
                 )

@@ -1,6 +1,7 @@
 package com.classic.dota2wardvision
 
 import android.os.Bundle
+import android.speech.tts.TextToSpeech
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -45,9 +46,12 @@ import com.classic.dota2wardvision.viewModel.AlarmViewModel
 import com.classic.dota2wardvision.viewModel.HistoryViewModel
 import com.classic.dota2wardvision.viewModel.SearchViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.Locale
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+//    private lateinit var tts: TextToSpeech
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -56,6 +60,18 @@ class MainActivity : ComponentActivity() {
                  MainScreen()
             }
         }
+
+//        tts = TextToSpeech(this) { status ->
+//            if (status == TextToSpeech.SUCCESS) {
+//                val result = tts.setLanguage(Locale.US)
+//                if (result != TextToSpeech.LANG_MISSING_DATA &&
+//                    result != TextToSpeech.LANG_NOT_SUPPORTED
+//                ) {
+//                    // ✅ Speak immediately for test
+//                    tts.speak("Hello, Text to Speech is working!", TextToSpeech.QUEUE_FLUSH, null, null)
+//                }
+//            }
+//        }
     }
 }
 

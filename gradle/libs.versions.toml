@@ -18,6 +18,8 @@ hilt = "2.51.1"
 hiltnavigation = "1.2.0"
 osslicenses = "17.3.0"
 osslicensesplugin = "0.10.6"
+material3 = "1.2.0"
+material = "1.7.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -46,6 +48,9 @@ dagger-hilt = {group = "com.google.dagger",name =  "hilt-android",version.ref = 
 dagger-hilt-compiler = {group = "com.google.dagger",name =  "hilt-android-compiler",version.ref = "hilt"}
 hilt-navigation-compose = {group = "androidx.hilt",name = "hilt-navigation-compose",version.ref = "hiltnavigation"}
 oss-licenses = {group = "com.google.android.gms", name = "play-services-oss-licenses", version.ref = "osslicenses"}
+androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
+androidx-compose-material = {group = "androidx.compose.material", name = "material", version.ref = "material"}
+androidx-compose-material-core = {group = "androidx.compose.material", name = "material-icons-core", version.ref = "material"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
